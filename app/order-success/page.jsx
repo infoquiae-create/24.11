@@ -57,14 +57,20 @@ function OrderSuccessContent() {
   // Generate readable order number (e.g., S523645)
   function getOrderNumber(id) {
     if (!id) return '';
-    // Use last 6 digits as number, prefix S
-    const num = parseInt(id.replace(/\D/g, '').slice(-6)) || Math.floor(Math.random() * 900000 + 100000);
-    return `S${num}`;
+    // Deterministically convert the full order id into a 6-digit numeric order number
+    // This keeps the URL using the real id while showing a short numeric order number to users.
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+      hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+    }
+    const num = (hash % 900000) + 100000; // ensures 6 digits between 100000-999999
+    return String(num);
   }
   // Calculate totals
   const products = order ? order.orderItems : [];
   const subtotal = products.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = order?.shippingFee || 20; // fallback to 20 if not present
+  // Force display of Shipping & handling as 0 (site-wide free shipping)
+  const shipping = 0;
   const discount = order?.coupon?.discount ? (order.coupon.discountType === 'percentage' ? (order.coupon.discount / 100 * subtotal) : Math.min(order.coupon.discount, subtotal)) : 0;
   const total = subtotal + shipping - discount;
   const orderDate = order?.createdAt ? new Date(order.createdAt).toLocaleDateString() : new Date().toLocaleDateString();

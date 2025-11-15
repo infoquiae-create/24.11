@@ -73,6 +73,8 @@ export async function POST(request){
          }
 
          // Load shipping settings
+         // Force shipping to be disabled here so shipping fees are not charged anywhere.
+         // This makes shipping free across the site regardless of DB settings or membership.
          const shippingSetting = await prisma.shippingSetting.findUnique({ where: { id: "default" } }) || {
              enabled: true,
              shippingType: 'FLAT_RATE',
@@ -85,6 +87,9 @@ export async function POST(request){
              baseWeightFee: 5,
              additionalWeightFee: 2
          };
+
+        // Override: make shipping free for all orders
+        shippingSetting.enabled = false;
 
          // Calculate shipping fee based on type
          let shippingFee = 0;

@@ -97,33 +97,8 @@ const OrderSummary = ({ totalPrice, items }) => {
 
     // Calculate shipping fee
     const calculateShipping = () => {
-        if (!shipping.enabled) return 0;
-        if (totalPrice >= shipping.freeShippingMin) return 0;
-
-        switch (shipping.shippingType) {
-            case 'FLAT_RATE':
-                return shipping.flatRate;
-            case 'PER_ITEM':
-                const totalItems = items.reduce((sum, item) => sum + Number(item.quantity), 0);
-                let fee = totalItems * shipping.perItemFee;
-                if (shipping.maxItemFee) {
-                    fee = Math.min(fee, shipping.maxItemFee);
-                }
-                return fee;
-            case 'WEIGHT_BASED':
-                // Assume 0.5kg per item (can be enhanced with actual product weights)
-                const totalWeight = items.reduce((sum, item) => sum + Number(item.quantity) * 0.5, 0);
-                if (totalWeight <= shipping.baseWeight) {
-                    return shipping.baseWeightFee;
-                } else {
-                    const additionalWeight = Math.ceil(totalWeight - shipping.baseWeight);
-                    return shipping.baseWeightFee + (additionalWeight * shipping.additionalWeightFee);
-                }
-            case 'FREE':
-                return 0;
-            default:
-                return 5;
-        }
+        // Force free shipping across the UI (site-wide free shipping requirement)
+        return 0;
     };
 
     const shippingFee = calculateShipping();
@@ -193,6 +168,10 @@ const OrderSummary = ({ totalPrice, items }) => {
                             // For guests, redirect to first order success (or show all order IDs)
                             const orderId = data.orders ? data.orders[0].id : data.order.id;
                             router.push(`/order-success?orderId=${orderId}`);
+                            // After briefly showing the success page, navigate to the cart page
+                            setTimeout(() => {
+                                router.push('/cart');
+                            }, 8000);
                         }
                     } else {
                         router.push('/order-failed');
@@ -236,6 +215,10 @@ const OrderSummary = ({ totalPrice, items }) => {
                 router.push('/orders')
                 // Fetch updated cart from server to sync
                 dispatch(fetchCart({getToken}))
+                // After briefly showing orders, navigate to cart page
+                setTimeout(() => {
+                    router.push('/cart');
+                }, 8000);
             }
            }else{
             router.push('/order-failed');

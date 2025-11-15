@@ -293,8 +293,8 @@ export default function StoreOrders() {
                                     <div>
                                         <p className="text-slate-500">Address</p>
                                         <p className="font-medium text-slate-900">
-                                            {selectedOrder.isGuest 
-                                                ? selectedOrder.address?.address
+                                            {selectedOrder.isGuest
+                                                ? `${selectedOrder.address?.street || ''}${selectedOrder.address?.street ? ', ' : ''}${[selectedOrder.address?.city, selectedOrder.address?.state, selectedOrder.address?.zip, selectedOrder.address?.country].filter(Boolean).join(', ')}`
                                                 : `${selectedOrder.address?.street}, ${selectedOrder.address?.city}, ${selectedOrder.address?.state}, ${selectedOrder.address?.zip}, ${selectedOrder.address?.country}`
                                             }
                                         </p>

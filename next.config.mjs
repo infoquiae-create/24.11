@@ -1,9 +1,14 @@
 /** @type {import('next').NextConfig} */
-const domains = [];
+// Always allow ImageKit host used by project images
+const domains = ['ik.imagekit.io'];
 try {
     if (process.env.IMAGEKIT_URL_ENDPOINT) {
         const u = new URL(process.env.IMAGEKIT_URL_ENDPOINT);
-        domains.push(u.hostname);
+        if (!domains.includes(u.hostname)) domains.push(u.hostname);
+    }
+    if (process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT) {
+        const u2 = new URL(process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT);
+        if (!domains.includes(u2.hostname)) domains.push(u2.hostname);
     }
 } catch {}
 
@@ -17,6 +22,8 @@ const nextConfig = {
     images: {
         unoptimized: false,
         domains,
+        // Allow the same hosts via remotePatterns for fine-grained control
+        remotePatterns: domains.map((host) => ({ protocol: 'https', hostname: host, pathname: '/:path*' })),
         formats: ['image/avif', 'image/webp'],
         deviceSizes: [320, 420, 640, 768, 1024, 1280, 1536, 1920],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
