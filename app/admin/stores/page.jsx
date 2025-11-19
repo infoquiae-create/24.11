@@ -15,6 +15,7 @@ export default function AdminStores() {
 
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
+    const [deleteModal, setDeleteModal] = useState({ open: false, store: null })
 
     const fetchStores = async () => {
         try {
@@ -44,6 +45,18 @@ export default function AdminStores() {
         }
     }, [user])
 
+    const handleDeleteStore = async (storeId) => {
+        try {
+            const token = await getToken();
+            await axios.post('/api/admin/delete-store', { storeId }, { headers: { Authorization: `Bearer ${token}` }});
+            toast.success('Store deleted successfully!');
+            setDeleteModal({ open: false, store: null });
+            fetchStores();
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message);
+        }
+    }
+
     return !loading ? (
         <div className="text-slate-500 mb-28">
             <h1 className="text-2xl">Live <span className="text-slate-800 font-medium">Stores</span></h1>
@@ -63,6 +76,10 @@ export default function AdminStores() {
                                     <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
                                     <span className="dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform duration-200 ease-in-out peer-checked:translate-x-4"></span>
                                 </label>
+                                <button
+                                    className="ml-4 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition"
+                                    onClick={() => setDeleteModal({ open: true, store })}
+                                >Delete Store</button>
                             </div>
                         </div>
                     ))}
@@ -74,6 +91,20 @@ export default function AdminStores() {
                 </div>
             )
             }
+
+            {/* Delete Confirmation Modal */}
+            {deleteModal.open && deleteModal.store && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+                    <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+                        <h2 className="text-xl font-bold mb-4 text-red-700">Delete Store</h2>
+                        <p className="mb-6">Are you sure you want to delete <span className="font-semibold">{deleteModal.store.name}</span>? This will remove the store and all its products and orders. This action cannot be undone.</p>
+                        <div className="flex gap-4 justify-end">
+                            <button className="px-4 py-2 bg-gray-200 rounded-lg" onClick={() => setDeleteModal({ open: false, store: null })}>Cancel</button>
+                            <button className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition" onClick={() => handleDeleteStore(deleteModal.store.id)}>Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     ) : <Loading />
 }
