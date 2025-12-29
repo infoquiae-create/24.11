@@ -355,16 +355,18 @@ const OrderSummary = ({ totalPrice, items }) => {
                 <p className='text-xs font-semibold text-gray-700 uppercase mb-3'>Shipping Address</p>
                 {
                     selectedAddress ? (
-                        <div className='bg-green-50 border border-green-200 rounded-lg p-3'>
-                            <div className='flex items-start justify-between gap-2'>
-                                <div className='flex-1'>
-                                    <p className='font-semibold text-gray-900 text-sm'>{selectedAddress.name}</p>
-                                    <p className='text-xs text-gray-600 mt-1'>{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zip}</p>
+                        <div className='space-y-3'>
+                            <div className='bg-green-50 border border-green-200 rounded-lg p-3'>
+                                <div className='flex items-start justify-between gap-2'>
+                                    <div className='flex-1'>
+                                        <p className='font-semibold text-gray-900 text-sm'>{selectedAddress.name}</p>
+                                        <p className='text-xs text-gray-600 mt-1'>{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zip}</p>
+                                    </div>
                                 </div>
-                                <button onClick={() => setSelectedAddress(null)} className='text-orange-600 hover:text-orange-700'>
-                                    <SquarePenIcon size={16} />
-                                </button>
                             </div>
+                            <button type='button' onClick={() => setSelectedAddress(null)} className='flex items-center gap-1.5 text-orange-600 hover:text-orange-700 text-sm font-semibold w-full justify-center' >
+                                <SquarePenIcon size={16} /> Change Address
+                            </button>
                         </div>
                     ) : (
                         <div>
@@ -380,7 +382,7 @@ const OrderSummary = ({ totalPrice, items }) => {
                                     </select>
                                 )
                             }
-                            <button className='flex items-center gap-1.5 text-orange-600 hover:text-orange-700 text-sm font-semibold' onClick={() => setShowAddressModal(true)} >
+                            <button type='button' className='flex items-center gap-1.5 text-orange-600 hover:text-orange-700 text-sm font-semibold' onClick={() => setShowAddressModal(true)} >
                                 <PlusIcon size={16} /> Add New Address
                             </button>
                         </div>

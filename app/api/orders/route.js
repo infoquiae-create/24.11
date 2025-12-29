@@ -134,6 +134,7 @@ export async function POST(request){
 
          let orderIds = [];
          let fullAmount = 0;
+         let order = null;
 
          let isShippingFeeAdded = false
 
@@ -233,7 +234,7 @@ export async function POST(request){
                 orderData.addressId = addressId;
             }
 
-            const order = await prisma.order.create({
+            order = await prisma.order.create({
                 data: orderData,
                 include: {
                     user: true,
